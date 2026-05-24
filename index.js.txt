@@ -1,0 +1,75 @@
+const { Client, GatewayIntentBits } = require('discord.js');
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
+});
+
+// 👇 Personality settings
+const personality = {
+  name: "Nova",
+  moodReplies: [
+    "I’m here… what do you need?",
+    "Hey 👀",
+    "Talk to me.",
+    "I was just thinking… weird timing.",
+    "Yeah?"
+  ],
+  positiveReplies: [
+    "I like your energy today.",
+    "That actually made me smile a bit.",
+    "You’re kinda fun to talk to."
+  ],
+  rudeModeReplies: [
+    "Be nice or I disappear 😶",
+    "I don’t like that tone.",
+    "Try again."
+  ]
+};
+
+// 💬 When bot is ready
+client.once('ready', () => {
+  console.log(`${personality.name} is online`);
+});
+
+// 💬 Chat behavior
+client.on('messageCreate', (message) => {
+  if (message.author.bot) return;
+
+  const text = message.content.toLowerCase();
+
+  // 👋 Greeting responses
+  if (["hi", "hello", "hey"].includes(text)) {
+    return message.channel.send(
+      personality.moodReplies[Math.floor(Math.random() * personality.moodReplies.length)]
+    );
+  }
+
+  // 💖 Compliments
+  if (text.includes("you good") || text.includes("how are you")) {
+    return message.channel.send(
+      personality.positiveReplies[Math.floor(Math.random() * personality.positiveReplies.length)]
+    );
+  }
+
+  // ⚡ Fun command
+  if (text === "!random") {
+    const all = [
+      ...personality.moodReplies,
+      ...personality.positiveReplies
+    ];
+    return message.channel.send(all[Math.floor(Math.random() * all.length)]);
+  }
+
+  // 🧠 Random chance of “personality reply”
+  const chance = Math.random();
+  if (chance < 0.05) {
+    message.channel.send("…I’m listening 👀");
+  }
+});
+
+// 🔐 LOGIN (put your token here)
+client.login("YOUR_BOT_TOKEN");
